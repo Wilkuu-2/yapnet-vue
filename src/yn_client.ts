@@ -1,8 +1,10 @@
 import { Back, ChatSent, Hello, RecapHead, YN_Message } from "./yapnet-protocol"
 import { isYN_Message } from "./yapnet-protocol.guard"
+import { Ref, ref } from "vue";
 
 type Username = string; 
 type Token    = string; 
+
 
 interface ConnectionConfig {
   address: string
@@ -35,12 +37,13 @@ declare interface Client {
   connection: WSConnection, 
   connectionConfig: ConnectionConfig | undefined
   messages: YN_Message[],
+  chats: Ref<Map<string, Array<ChatSent>>>,
   playerdata?: Player,
   recapState?: RecapState, 
   handleMessage(this: Client, message: YN_Message): void
   sendMessage(this: Client, message: YN_Message): void 
   onconnection?: ((this: Client, isConnected: boolean) => any);
-  onchat?: ((this: Client, chat: ChatSent) => any)
+  onsetup?: ((this: Client) => any)
   onplayer?: ((this: Client, username: string, isConnected: boolean) => any)
 
 } 
@@ -115,16 +118,18 @@ const _connection: WSConnection = {
   disconnect: WSDisconnect, 
 } 
 
+
 const _client: Client = {
   connection: _connection, 
   messages: Array<YN_Message>(0), 
+  chats: ref<Map<string, Array<ChatSent>>>( new Map<string, Array<ChatSent>>),
   connectionConfig: undefined, 
   playerdata: undefined, 
   recapState: undefined,
   handleMessage: HandleMessage,  
   sendMessage: SendMessage,
   onconnection: undefined, 
-  onchat: undefined, 
+  onsetup: undefined, 
   onplayer: undefined,
 } 
 
@@ -165,7 +170,14 @@ function HandleMessage(this:  Client, message: YN_Message) {
       this.messages.push(message)
       break;
     case "chat":
-      if ( this.onchat !== undefined) { this.onchat!(message);}
+      let chat = this.chats.value.get(message.data.chat_target)
+      if (chat === undefined) {
+        let chat2 = Array<ChatSent>() ;
+        this.chats.value.set(message.data.chat_target, chat2);
+        chat2.push(message)
+      } else {
+        chat.push(message)
+      }
       this.messages.push(message)
       break;
     case "err":
@@ -194,6 +206,14 @@ function HandleMessage(this:  Client, message: YN_Message) {
       });
        
       break;
+    case "stup":
+      message.data.chats.forEach(chat => {
+        if(!this.chats.value.has(chat.name))
+        { this.chats.value.set(chat.name, [])
+        }
+      }); 
+      if(this.onsetup !== undefined) { this.onsetup()} 
+    break; 
     case "helo":
     case "back":
     case "chas":
@@ -203,6 +223,7 @@ function HandleMessage(this:  Client, message: YN_Message) {
   
 }  
 
+
 export default {
   login_or_register(cfg: ConnectionConfig, onFinish?: (success: boolean) => any ){
     _client.connectionConfig = cfg;
@@ -211,6 +232,7 @@ export default {
       _client.onconnection = onFinish;
     } 
   },
+
 
   getClient(): Client {
     return _client

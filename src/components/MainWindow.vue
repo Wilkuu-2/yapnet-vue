@@ -1,40 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import ActionPanel from './ActionPanel.vue';
+import ChatPanel from './ChatPanel.vue';
 import yn_client from '../yn_client.ts';
 
 let client = yn_client.getClient();
 let username = ref(client.playerdata!.username );
 let uuid     = ref(client.playerdata!.token);
-let chats    = ref([{chatname: "general", username: "wilkuu", content: "Test"}]);
 let users    = ref([{name: 'wilkuu', online:true}]);
-let chat     = ref('') 
 
-client.onchat = (csent: ChatSent) => {
-  chats.value.push({
-    chatname: csent.data.chat_target,
-    username: csent.data.chat_sender,
-    content:  csent.data.chat_content,
-  });  
-  
-  let chatwindow = document.getElementById("mw-chatwindow")
-  chatwindow.scrollTop = chatwindow.scrollHeight
 
-}  
-
-function submit_chat(ev: SubmitEvent) {
-    ev.preventDefault();
-    client.sendMessage({
-      seq: 0,
-      msg_type: "chas", 
-      data: {
-        chat_target: "general",
-        chat_content: chat.value,  
-      }  
-    });
-    chat.value = ''; 
-    console.log("Sent chat")
-  }; 
 
 </script>
 
@@ -45,14 +20,8 @@ function submit_chat(ev: SubmitEvent) {
     </div>
     <div>{{uuid}}</div>
 
-    <div id="mw-chatwindow">
-      <ul>
-        <li v-for="chat in chats">
-          [{{chat.chatname}}] {{chat.username}}: {{chat.content}}
-        </li>
-      </ul>
-    </div>
-    
+    <ChatPanel/>
+
     <div>
       <ul class="mw-users">
         <li v-for="user in users">
@@ -62,9 +31,6 @@ function submit_chat(ev: SubmitEvent) {
     </div>
 
     <ActionPanel/>
-    <form @submit="submit_chat" action="javascript:void(0);" class="mw-chatform"> 
-      <input v-model="chat" type="text" name="chat"> 
-    </form> 
     
 
   </section>
@@ -84,9 +50,4 @@ function submit_chat(ev: SubmitEvent) {
   border: 5px #FE51AEFF solid;
   border-radius: 1rem;
 } 
-
-#mw-chatwindow {
-  grid-row: 2 / 4;
-  overflow: scroll; 
-}
 </style>

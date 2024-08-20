@@ -2,7 +2,7 @@
  * Generated type guards for "yapnet-protocol.ts".
  * WARNING: Do not manually change this file.
  */
-import { YN_Message, Hello, Back, Welcome, PlayerJoined, PlayerLeft, ChatSend, ChatSent, YNError, RecapHead, RecapTail } from "./yapnet-protocol";
+import { YN_Message, Hello, Back, Welcome, PlayerJoined, PlayerLeft, ChatSend, ChatSent, YNError, RecapHead, RecapTail, YNSetup, Perm, PermUser, PermGroup, PermAny } from "./yapnet-protocol";
 
 export function isYN_Message(obj: unknown): obj is YN_Message {
     const typedObj = obj as YN_Message
@@ -16,7 +16,8 @@ export function isYN_Message(obj: unknown): obj is YN_Message {
             isChatSent(typedObj) as boolean ||
             isYNError(typedObj) as boolean ||
             isRecapHead(typedObj) as boolean ||
-            isRecapTail(typedObj) as boolean)
+            isRecapTail(typedObj) as boolean ||
+            isYNSetup(typedObj) as boolean)
     )
 }
 
@@ -178,5 +179,80 @@ export function isRecapTail(obj: unknown): obj is RecapTail {
         typedObj["data"]["msgs"].every((e: any) =>
             isYN_Message(e) as boolean
         )
+    )
+}
+
+export function isYNSetup(obj: unknown): obj is YNSetup {
+    const typedObj = obj as YNSetup
+    return (
+        (typedObj !== null &&
+            typeof typedObj === "object" ||
+            typeof typedObj === "function") &&
+        typeof typedObj["seq"] === "number" &&
+        typedObj["msg_type"] === "stup" &&
+        (typedObj["data"] !== null &&
+            typeof typedObj["data"] === "object" ||
+            typeof typedObj["data"] === "function") &&
+        Array.isArray(typedObj["data"]["chats"]) &&
+        typedObj["data"]["chats"].every((e: any) =>
+            (e !== null &&
+                typeof e === "object" ||
+                typeof e === "function") &&
+            typeof e["name"] === "string" &&
+            Array.isArray(e["perm"]) &&
+            e["perm"].every((e: any) =>
+                isPerm(e) as boolean
+            )
+        )
+    )
+}
+
+export function isPerm(obj: unknown): obj is Perm {
+    const typedObj = obj as Perm
+    return (
+        ((typedObj !== null &&
+            typeof typedObj === "object" ||
+            typeof typedObj === "function") &&
+            isPermUser(typedObj["user"]) as boolean ||
+            (typedObj !== null &&
+                typeof typedObj === "object" ||
+                typeof typedObj === "function") &&
+            isPermGroup(typedObj["group"]) as boolean ||
+            (typedObj !== null &&
+                typeof typedObj === "object" ||
+                typeof typedObj === "function") &&
+            isPermAny(typedObj["any"]) as boolean)
+    )
+}
+
+export function isPermUser(obj: unknown): obj is PermUser {
+    const typedObj = obj as PermUser
+    return (
+        (typedObj !== null &&
+            typeof typedObj === "object" ||
+            typeof typedObj === "function") &&
+        typeof typedObj["rw"] === "number" &&
+        typeof typedObj["name"] === "string"
+    )
+}
+
+export function isPermGroup(obj: unknown): obj is PermGroup {
+    const typedObj = obj as PermGroup
+    return (
+        (typedObj !== null &&
+            typeof typedObj === "object" ||
+            typeof typedObj === "function") &&
+        typeof typedObj["rw"] === "number" &&
+        typeof typedObj["name"] === "string"
+    )
+}
+
+export function isPermAny(obj: unknown): obj is PermAny {
+    const typedObj = obj as PermAny
+    return (
+        (typedObj !== null &&
+            typeof typedObj === "object" ||
+            typeof typedObj === "function") &&
+        typeof typedObj["rw"] === "number"
     )
 }

@@ -1,5 +1,5 @@
 
-export type YN_Message = PlayerJoined | Hello | Back | Welcome | PlayerJoined | PlayerLeft | ChatSend | ChatSent | YNError |  RecapHead | RecapTail; 
+export type YN_Message = PlayerJoined | Hello | Back | Welcome | PlayerJoined | PlayerLeft | ChatSend | ChatSent | YNError |  RecapHead | RecapTail | YNSetup; 
 
 // Player movement protocol
 /// Client: First time join
@@ -80,3 +80,15 @@ export type RecapTail = {
   msg_type: "recx";
   data: { start: number; msgs: Array<YN_Message> };
 }
+
+export type YNSetup = {
+  seq: number; 
+  msg_type: "stup";
+  data: { chats: Array<{name: string , perm: Array<Perm>}> };
+} 
+
+export type Perm = {user: PermUser} | {group: PermGroup} | {any: PermAny}; 
+
+export type PermUser = {rw: number, name: string} 
+export type PermGroup = {rw: number, name: string} 
+export type PermAny = {rw: number} 
