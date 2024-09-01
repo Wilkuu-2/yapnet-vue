@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import yn_client from '../yn_client.ts';
+import yn_client from '../yn_client';
 import { ref, computed } from 'vue';
 
 const client = yn_client.getClient();
 const selector = ref("general");
-const selectors = computed<string>(() => {
+const selectors = computed<Array<string>>(() => {
   return Array.from(client.chats.value.keys());
   
 });
@@ -44,7 +44,7 @@ function submit_chat(ev: SubmitEvent) {
     </ul>
   </div>
 
-  <form @submit="submit_chat" action="javascript:void(0);" id="mw-chatform"> 
+  <form @submit="submit_chat" id="mw-chatform"> 
     <input v-model="chat" type="text" name="chat"> 
   </form> 
 </template>

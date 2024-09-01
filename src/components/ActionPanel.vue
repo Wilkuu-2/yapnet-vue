@@ -1,7 +1,4 @@
-<script>
-  export default {
-    name:"ActionPanel",
-  }
+<script setup lang="ts">
 </script>
 
 <template>

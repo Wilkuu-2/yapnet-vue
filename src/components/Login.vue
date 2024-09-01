@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import yn_client from '../yn_client.ts';
-import { ChatSent} from '../yn-protocol.ts';
-
-let client = yn_client.getClient()
+import yn_client from '../yn_client';
 
 let username = ref('')
 let token    = ref('')

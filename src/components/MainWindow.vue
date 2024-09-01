@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import ActionPanel from './ActionPanel.vue';
 import ChatPanel from './ChatPanel.vue';
-import yn_client from '../yn_client.ts';
+import yn_client from '../yn_client';
 
 let client = yn_client.getClient();
 let username = ref(client.playerdata!.username );
